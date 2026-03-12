@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import random
-from task import Task
+from src.task import Task
 
 
 @dataclass

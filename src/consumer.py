@@ -1,6 +1,6 @@
 from typing import Any
-from protocol import TaskSource
-from task import Task
+from src.protocol import TaskSource
+from src.task import Task
 
 
 class TaskConsumer:

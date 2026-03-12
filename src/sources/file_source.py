@@ -1,6 +1,6 @@
 from typing import Protocol
 from pathlib import Path
-from task import Task
+from src.task import Task
 import json
 
 
