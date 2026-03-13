@@ -16,7 +16,7 @@
 ```
 Lab-1-Python-2-sem/
 ├── src/
-│ ├── init.py
+│ ├── __init__.py
 │ ├── main.py # Точка входа для python -m src
 │ ├── cli.py # CLI-команды (typer)
 │ ├── consumer.py # TaskConsumer + проверка контракта
@@ -24,12 +24,12 @@ Lab-1-Python-2-sem/
 │ ├── protocol.py # Protocol TaskSource (@runtime_checkable)
 │ ├── task.py # Модель задачи (dataclass)
 │── sources/
-│ ├── init.py
+│ ├── __init__.py
 │ ├── file_source.py # Источник из JSON-файла
 │ ├── generator_source.py # Программный генератор
 │ └── api_mock_source.py # API-заглушка
 ├── tests/
-│ ├── init.py
+│ ├── __init__.py
 │ ├── test_all_sources.py # Тесты источников
 │ ├── test_cli.py # Тесты CLI
 │ ├── test_consumer.py # Тесты Consumer
@@ -39,4 +39,7 @@ Lab-1-Python-2-sem/
 │ └── task.log # Файл логов (создаётся автоматически)
 ├── messages.json # Пример данных для FileSource
 ├── requirements.txt # Зависимости проекта
+├── .gitignore  # Файл .gitignore
+├── .pre-commit-config.yaml  # Конфиг .pre-commit
+├── pyproject.toml # Конфиг проекта
 └── README.md # Документация
