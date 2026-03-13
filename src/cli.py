@@ -23,7 +23,7 @@ def file(path: Path = typer.Argument(..., help="Путь к JSON-файлу")):
     logger.info(f"Запуск команды file: path={path}")
     consumer = TaskConsumer()
     try:
-        logger.debug("Создание FileSource для {path}")
+        logger.debug(f"Создание FileSource для {path}")
         source = FileSource(path)
         tasks = consumer.accept_tasks(source)
         logger.info(f"FileSource: получено {len(tasks)} задач")
@@ -69,11 +69,11 @@ def generate(
         typer.echo(f"Ошибка: {e}")
         raise typer.Exit(1)
     except TypeError as e:
-        logging.error(f"Нарушение контракта - {e}")
+        logger.error(f"Нарушение контракта - {e}")
         typer.echo(f"Нарушение контракта - {e}")
         typer.Exit(1)
     except Exception as e:
-        logging.error(f"Ошибка в generate - {e}")
+        logger.error(f"Ошибка в generate - {e}")
         typer.echo(f"Ошибка: {e}")
         raise typer.Exit(1)
 
@@ -84,7 +84,7 @@ def api():
     consumer = TaskConsumer()
     logger.info("Запуск команды api")
     try:
-        logging.debug("Cоздание APIMockSource")
+        logger.debug("Cоздание APIMockSource")
         source = APIMockSource()
         tasks = consumer.accept_tasks(source)
         logger.info(f"APIMockSource: получено {len(tasks)} задач")
@@ -96,7 +96,7 @@ def api():
         typer.echo(f"Нарушение контракта: {e}")
         raise typer.Exit(1)
     except Exception as e:
-        logging.error(f"Ошиибка в api: {e}")
+        logger.error(f"Ошиибка в api: {e}")
         typer.echo(f"Ошибка: {e}")
         raise typer.Exit(1)
 
