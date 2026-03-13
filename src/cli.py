@@ -9,8 +9,7 @@ from src.consumer import TaskConsumer
 from src.logger import set_logger
 
 
-logger = logging.getLogger(__name__)
-set_logger(logging.INFO)
+logger = set_logger(logging.INFO)
 
 
 app = typer.Typer(help="Платформа обработки задач")
@@ -21,7 +20,7 @@ def file(path: Path = typer.Argument(..., help="Путь к JSON-файлу")):
     """
     Получение задачи из файла
     """
-    logger.info(f"Запуск команды 'file': path={path}")
+    logger.info(f"Запуск команды file: path={path}")
     consumer = TaskConsumer()
     try:
         logger.debug("Создание FileSource для {path}")
@@ -54,14 +53,27 @@ def generate(
     Генерация задачи
     """
     consumer = TaskConsumer()
+    logger.info(f"Запуск команды generate: count={count}, prefix={prefix}")
     try:
+        logger.debug(
+            f"Создание GeneratorConfig(count={count}, prefix={prefix})")
         config = GeneratorConfig(count=count, prefix=prefix)
         source = GeneratorSource(config)
         tasks = consumer.accept_tasks(source)
+        logger.info(f"GeneratorSource: {len(tasks)} задач")
         typer.echo(f"GeneratorSource: {len(tasks)} задач")
         for task in tasks:
             typer.echo(f"   • {task.id}: {task.payload}")
+    except ValueError as e:
+        logger.error(f"Некорректные параметры: {e}")
+        typer.echo(f"Ошибка: {e}")
+        raise typer.Exit(1)
+    except TypeError as e:
+        logging.error(f"Нарушение контракта - {e}")
+        typer.echo(f"Нарушение контракта - {e}")
+        typer.Exit(1)
     except Exception as e:
+        logging.error(f"Ошибка в generate - {e}")
         typer.echo(f"Ошибка: {e}")
         raise typer.Exit(1)
 
@@ -70,35 +82,49 @@ def generate(
 def api():
     """Получить задачи из API-заглушки."""
     consumer = TaskConsumer()
+    logger.info("Запуск команды api")
     try:
+        logging.debug("Cоздание APIMockSource")
         source = APIMockSource()
         tasks = consumer.accept_tasks(source)
+        logger.info(f"APIMockSource: получено {len(tasks)} задач")
         typer.echo(f"APIMockSource: {len(tasks)} задач")
         for task in tasks:
-            typer.echo(f"   • {task.id}: {task.payload}")
+            typer.echo(f"  - {task.id}: {task.payload}")
+    except TypeError as e:
+        logger.error(f"Нарушение контракта: {e}")
+        typer.echo(f"Нарушение контракта: {e}")
+        raise typer.Exit(1)
     except Exception as e:
+        logging.error(f"Ошиибка в api: {e}")
         typer.echo(f"Ошибка: {e}")
         raise typer.Exit(1)
 
 
 @app.command()
 def all(
-    file: Path = typer.Option("tasks.json", "--file",
+    file: Path = typer.Option("messages.json", "--file",
                               "-f", help="Путь к JSON-файлу"),
     count: int = typer.Option(
         3, "--count", "-n", help="Количество задач для генератора"),
 ):
     """Получить задачи из всех источников."""
     consumer = TaskConsumer()
+    logger.info(f"Запуск команды all: file={file}, count={count}")
     try:
+        logger.debug("Создание списка источников")
         sources = [
             FileSource(file),
             GeneratorSource(GeneratorConfig(count=count)),
             APIMockSource(),
         ]
+        logger.info(f"Получение задач из {len(sources)} источников")
         all_tasks = consumer.accept_tasks_from_multiple_sources(sources)
+        logger.info(f"Всего получено {len(all_tasks)} задач")
         typer.echo(f" Всего: {len(all_tasks)} задач из 3 источников")
+        return 0
     except Exception as e:
+        logger.exception(f"Ошибка в all: {e}")
         typer.echo(f"Ошибка: {e}")
         raise typer.Exit(1)
 
