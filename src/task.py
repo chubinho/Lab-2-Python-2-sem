@@ -5,3 +5,5 @@ from typing import Any
 class Task:
     id: str
     payload: Any
+    priority: int
+    
