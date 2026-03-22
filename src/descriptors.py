@@ -45,9 +45,9 @@ class PriorityDescriptor:
     Data Descriptor для валидации приоритета задачи.
     """
 
-    def __set_name__(self, name: str, owner: type, ) -> None:
+    def __set_name__(self, owner: type, name: str) -> None:
         """
-        Сохраняет имя атрибута.
+        Сохраняет имя атрибута
         Вызывается автоматически при создании класса
 
         Args:
@@ -89,7 +89,7 @@ class PriorityDescriptor:
 
 
 class StatusDescriptor:
-    def __set_name__(self, name: str, owner: type) -> None:
+    def __set_name__(self, owner: type, name: str) -> None:
         """
         Сохраняет имя атрибута.
         Вызывается автоматически при создании класса-владельца.
@@ -127,3 +127,43 @@ class StatusDescriptor:
         if obj is None:
             return self
         return getattr(obj, self.status, None)
+
+
+class DescriptionDescriptor:
+    def __set_name__(self, owner: object, name: str):
+        """
+        Сохраняет имя атрибута
+        Args:
+            owner: Класс-владелец дескриптора
+            name: Имя атрибута в классе
+        """
+        self.description = '_' + name
+
+    def __set__(self, obj: object, value: str) -> None: 
+        """
+        Устанавливает значение описания с валидацией
+        Args:
+            obj: Экземпляр объекта
+            value: Значение описания
+        Raises:
+            TypeError: Если значение не строка
+            ValueError: Если строка пустая
+        """
+        if not isinstance(value, str):
+            raise TypeError()
+        if not value.strip():
+            raise ValueError("Описание не может быть пустым")
+        setattr(obj, self.description, value)
+
+    def __get__(self, obj: object, owner: type = None) -> str | None:
+        """
+        Возвращает значение описания
+        Args:
+            obj: Экземпляр объекта 
+            objtype: Класс-владелец
+        Returns:
+            Значение описания или сам дескриптор
+        """
+        if obj is None:
+            return self
+        return getattr(obj, self.description, None)
