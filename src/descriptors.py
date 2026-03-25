@@ -1,5 +1,5 @@
 from typing import Any, Optional
-
+from src.exceprions import ValidationError
 
 class IdDescriptor:
     """
@@ -23,9 +23,9 @@ class IdDescriptor:
             ValueError: Если значение <= 0
         """
         if not isinstance(value, int):
-            raise TypeError("Id должен быть целый")
+            raise ValidationError("Id должен быть целый")
         if value < 1:
-            raise ValueError("Id это целое число > 0")
+            raise ValidationError("Id это целое число > 0")
         setattr(obj, self.id, value)
 
     def __get__(self, obj: object, owner: type = None) -> int | None:
@@ -71,9 +71,9 @@ class PriorityDescriptor:
             ValueError: Если значение вне диапазона 1-10
         """
         if not isinstance(value, int):
-            raise TypeError("Priority должен быть целым числом(от 1 до 10)")
+            raise ValidationError("Priority должен быть целым числом(от 1 до 10)")
         if not (1 <= value <= 10):
-            raise ValueError("Priority должен быть в диапазоне от 1 до 10")
+            raise ValidationError("Priority должен быть в диапазоне от 1 до 10")
         setattr(obj, self.priority, value)
 
     def __get__(self, obj: object, owner: type = None) -> int | None:
@@ -112,9 +112,9 @@ class StatusDescriptor:
             ValueError: Если статус не входит в список допустимых
         """
         if not isinstance(value, str):
-            raise TypeError("Status должен быть строкой")
+            raise ValidationError("Status должен быть строкой")
         if value not in ["in_progress", "done", "cancelled", "paused", "new"]:
-            raise ValueError(f"Статус {value} недопустим")
+            raise ValidationError(f"Статус {value} недопустим")
         setattr(obj, self.status, value)
 
     def __get__(self, obj: object, owner: type = None) -> str | None:
@@ -152,9 +152,9 @@ class DescriptionDescriptor:
             ValueError: Если строка пустая
         """
         if not isinstance(value, str):
-            raise TypeError()
+            raise ValidationError("Описание должно быть строкой")
         if not value.strip():
-            raise ValueError("Описание не может быть пустым")
+            raise ValidationError("Описание не может быть пустым")
         setattr(obj, self.description, value)
 
     def __get__(self, obj: object, owner: type = None) -> str | None:
