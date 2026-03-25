@@ -2,7 +2,6 @@ class IdDescriptor:
     """
     Data Descriptor для валидации идентификатора задачи
     """
-
     def __set_name__(self, owner: type, name: str) -> None:
         """
         Сохраняет имя атрибута.
@@ -139,7 +138,7 @@ class DescriptionDescriptor:
         """
         self.description = '_' + name
 
-    def __set__(self, obj: object, value: str) -> None: 
+    def __set__(self, obj: object, value: str) -> None:
         """
         Устанавливает значение описания с валидацией
         Args:
@@ -167,3 +166,18 @@ class DescriptionDescriptor:
         if obj is None:
             return self
         return getattr(obj, self.description, None)
+
+
+class ReadOnlyDescriptor:
+    def __set_name__(self, owner: type, name: str):
+        self.storage_name = '_' + name
+
+    def __set__(self, obj: object, value: object):
+        if hasattr(obj, self.storage_name):
+            raise AttributeError("Атрибут только для чтения")
+        setattr(obj, self.storage_name, value)
+    
+    def __get__(self, obj: object, objtype: type = None):
+        if obj is None:
+            return self
+        return getattr(obj, self.storage_name, None)
