@@ -1,3 +1,6 @@
+from typing import Any, Optional
+
+
 class IdDescriptor:
     """
     Data Descriptor для валидации идентификатора задачи
@@ -169,15 +172,55 @@ class DescriptionDescriptor:
 
 
 class ReadOnlyDescriptor:
-    def __set_name__(self, owner: type, name: str):
-        self.storage_name = '_' + name
+    def __set_name__(self, owner: type, name: str) -> None:
+        """
+        Сохраняет имя атрибута для хранения.
+        Args:
+            owner: Класс-владелец дескриптора
+            name: Имя атрибута в классе
+        """
+        self.storage_name: str = '_' + name
 
-    def __set__(self, obj: object, value: object):
+    def __set__(self, obj: object, value: Any) -> None:
+        """
+        Устанавливает значение атрибута только если оно ещё не установлен
+        
+        Args:
+            obj: Экземпляр объекта
+            value: Значение атрибута
+            
+        Raises:
+            AttributeError: Если значение уже установлено
+        """
         if hasattr(obj, self.storage_name):
             raise AttributeError("Атрибут только для чтения")
         setattr(obj, self.storage_name, value)
-    
-    def __get__(self, obj: object, objtype: type = None):
+
+    def __get__(self, obj: object, objtype: type = None) -> Optional[Any]:
+        """
+        Возвращает значение атрибута
+        Args:
+            obj: Экземпляр объекта
+            objtype: Класс-владелец
+        Returns:
+            Значение атрибута или сам дескриптор
+        """
         if obj is None:
             return self
         return getattr(obj, self.storage_name, None)
+    
+
+class TaskTypeDescriptor:
+    "Non-Data descriptor"
+    def __get__(self, obj: object, objtype: type = None) -> str:
+        """
+        Возвращает тип задачи
+        Args:
+            obj: Экземпляр объекта 
+            objtype: Класс-владелец
+        Returns:
+            str: Тип задачи ("GeneralTask") или сам дескриптор
+        """
+        if obj is None:
+            return self
+        return "GeneralTask"
