@@ -5,6 +5,7 @@ from src.task import Task
 
 logger = logging.getLogger("task")
 
+
 @dataclass
 class GeneratorConfig:
     """
@@ -21,23 +22,27 @@ class GeneratorConfig:
     seed: int | None = None
     random_priority: bool = True
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """
         Валидация атрибутов после инициализации
         """
-        if self.count < 0 or not isinstance(self.count, int):
+        if not isinstance(self.count, int):
             logger.error(
                 f"Некорректный тип count: {type(self.count).__name__}")
-            raise ValueError(
-                "Количество задач не может быть отрицательным или не быть целым числом")
+            raise ValueError("Количество задач должно быть целым числом")
+        if self.count < 0:
+            logger.error(f"Отрицательное значение count: {self.count}")
+            raise ValueError("Количество задач не может быть отрицательным")
         logger.debug(
             f"GeneratorConfig создан: count={self.count}, prefix={self.prefix}")
+
 
 class GeneratorSource:
     """
     Источник задач, генерирующий задачи программно
     """
-    def __init__(self, config: GeneratorConfig | None = None):
+
+    def __init__(self, config: GeneratorConfig | None = None) -> None:
         self.config = config if config is not None else GeneratorConfig()
         logger.debug(
             f"GeneratorSource инициализирован с конфигом: count={self.config.count}")
@@ -45,7 +50,11 @@ class GeneratorSource:
     @classmethod
     def for_test(cls, count: int = 3) -> 'GeneratorSource':
         """
-        Создание генератора для тестов
+        Args:
+            count: Количество задач для генерации
+            
+        Returns:
+            GeneratorSource: Настроенный генератор для тестов
         """
         logger.debug(f"Создание генератора для тестов: count={count}")
         config = GeneratorConfig(count=count, seed=52, random_priority=False)
@@ -56,7 +65,7 @@ class GeneratorSource:
         Сгенерировать задачи 
         
         Returns:
-            list[Task]: Список Task
+            list[Task]: Список объектов Task
         """
         logger.info(
             f"Генерация {self.config.count} задач с префиксом '{self.config.prefix}'")
@@ -68,20 +77,24 @@ class GeneratorSource:
 
         for i in range(1, self.config.count + 1):
             if self.config.random_priority:
-                priority = random.randint(1,10)
+                priority = random.randint(1, 10)
             else:
                 priority = 5
-            logger.debug(
-                f"Генерация задачи {i}: id={self.config.prefix}{i}, priority={priority}")
+
+            logger.debug(f"Генерация задачи {i}: id={i}, priority={priority}")
+
             task = Task(
-                id = f"{self.config.prefix}{i}",
+                id=i,
                 payload={
                     "generated": True,
                     "index": i,
                     "source": "GeneratorSource",
-                    "priority": priority
+                    "priority": priority,
+                    "description": f"Сгенерированная задача #{i}",
+                    "status": "new" 
                 }
             )
             tasks.append(task)
+
         logger.info(f"Сгенерировано {len(tasks)} задач")
         return tasks

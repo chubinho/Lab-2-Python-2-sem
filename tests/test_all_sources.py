@@ -10,8 +10,8 @@ class TestFileSource:
         """Загружаем задачи из нормального JSON-файла"""
         test_file = tmp_path / "tasks.json"
         data = [
-            {"id": "task_1", "payload": {"action": "test1"}},
-            {"id": "task_2", "payload": {"action": "test2"}},
+            {"id": 1, "payload": {"action": "test1"}},
+            {"id": 2, "payload": {"action": "test2"}},
         ]
         test_file.write_text(json.dumps(data))
 
@@ -19,7 +19,7 @@ class TestFileSource:
         tasks = source.get_task()
 
         assert len(tasks) == 2
-        assert tasks[0].id == "task_1"
+        assert tasks[0].id == 1
 
     def test_invalid_json_content(self, tmp_path):
         """Тест на неправильный файл JSON"""
@@ -34,7 +34,7 @@ class TestFileSource:
     def test_missing_payload_field(self, tmp_path):
         """Передача задачи без payload"""
         test_file = tmp_path / "missing.json"
-        data = [{"id": "1"}]
+        data = [{"id": 1}]
         test_file.write_text(json.dumps(data))
 
         source = FileSource(str(test_file))
@@ -65,14 +65,6 @@ class TestGeneratorSource:
         tasks = source.get_task()
 
         assert len(tasks) == 21
-
-    def test_prefix_in_task_id(self):
-        """Префикс должен быть в начале id задачи"""
-        config = GeneratorConfig(count=3, prefix="my_prefix_")
-        source = GeneratorSource(config)
-        tasks = source.get_task()
-
-        assert tasks[0].id.startswith("my_prefix_")
 
     def test_negative_count_raises_error(self):
         """Проверка правильности количества"""
@@ -113,19 +105,19 @@ class TestAPIMockSource:
     def test_custom_tasks_data(self):
         """Проверка передач своих данных"""
         custom = [
-            {"id": "custom_1", "payload": {"test": True}},
-            {"id": "custom_2", "payload": {"test": '131315415'}},
+            {"id": 1, "payload": {"test": True}},
+            {"id": 2, "payload": {"test": '131315415'}},
         ]
         source = APIMockSource(tasks_data=custom)
         tasks = source.get_task()
 
         assert len(tasks) == 2
-        assert tasks[0].id == "custom_1"
+        assert tasks[0].id == 1
         assert tasks[1].payload == {"test": '131315415'}
 
     def test_missing_field_in_custom_data(self):
         """Отсутствие payload"""
-        invalid = [{"id": "1"}]
+        invalid = [{"id": 1}]
         source = APIMockSource(tasks_data=invalid)
 
         with pytest.raises(KeyError):

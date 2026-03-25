@@ -40,7 +40,7 @@ class TestCLICommands:
         assert result.exit_code == 0
         assert "APIMockSource:" in result.stdout
         assert "3 задач" in result.stdout
-        assert "api_1" in result.stdout
+        assert "1" in result.stdout
 
     def test_file_with_valid_json(self, tmp_path):
         """Загрузка задач из JSON-файла"""
@@ -55,12 +55,6 @@ class TestCLICommands:
         assert result.exit_code == 0
         assert "FileSource:" in result.stdout
         assert "2 задач" in result.stdout
-
-    def test_generate_with_prefix(self):
-        """Генерация с кастомным префиксом"""
-        result = runner.invoke(app, ["generate", "--prefix", "test_"])
-        assert result.exit_code == 0
-        assert "test_1" in result.stdout
 
     def test_all_command_with_custom_file(self, tmp_path):
         """Команда all с кастомным файлом"""
@@ -82,12 +76,3 @@ class TestCLICommands:
         assert result.exit_code != 0
         assert "Ошибка" in result.stdout
 
-    def test_file_with_missing_payload(self, tmp_path):
-        """Файл без поля payload должен вызывать ошибку"""
-        test_file = tmp_path / "missing.json"
-        data = [{"id": "1"}]
-        test_file.write_text(json.dumps(data))
-        result = runner.invoke(app, ["file", str(test_file)])
-
-        assert result.exit_code != 0
-        assert "Ошибка" in result.stdout

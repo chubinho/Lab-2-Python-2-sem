@@ -1,6 +1,6 @@
 [
     {
-        "id": "task_1",
+        "id": 1,
         "payload": {
             "title": "Hello World",
             "author": "Alice",
@@ -8,7 +8,7 @@
         }
     },
     {
-        "id": "task_2",
+        "id": 2,
         "payload": {
             "title": "Duck Typing",
             "author": "Bob",
@@ -16,7 +16,7 @@
         }
     },
     {
-        "id": "task_3",
+        "id": 3,
         "payload": {
             "title": "Protocols",
             "author": "Carol",
@@ -24,7 +24,7 @@
         }
     },
     {
-        "id": "task_4",
+        "id": 4,
         "payload": {
             "title": "CLI Tools",
             "author": "Dave",

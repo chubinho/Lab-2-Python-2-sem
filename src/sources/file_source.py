@@ -6,16 +6,20 @@ import json
 
 logger = logging.getLogger("task")
 
+
 class FileSource:
     """
     Источник задач, загружающий данные из файла
+    Загружает задачи из JSON-файла и создаёт объекты Task
+    с валидацией через дескрипторы.
     """
 
     def __init__(self, file_path: str | Path) -> None:
         """
         Инициализация источника
+        
         Args:
-            file_path
+            file_path: Путь к JSON-файлу с задачами
         """
         self.path = Path(file_path)
         logger.info(f"Загрузка задач из файла: {self.path}")
@@ -29,14 +33,14 @@ class FileSource:
         
         Raises:
             FileNotFoundError: Если файл не найден
-            ValueError: Если файл содержит невалидный JSON
+            ValueError: Если файл содержит невалидный JSON или данные не проходят валидацию
             KeyError: Если в задаче отсутствуют обязательные поля
         """
         try:
             if not self.path.exists():
                 logger.error(f"Данный файл не найден: {self.path}")
                 raise FileNotFoundError(
-                    f"Файл с заданием не найден:{self.path}")
+                    f"Файл с заданием не найден: {self.path}")
 
             with open(self.path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -45,22 +49,26 @@ class FileSource:
 
             tasks = []
             for task_data in data:
+                task_id = task_data['id']
+                if isinstance(task_id, str):
+                    task_id = int(task_id)
+                payload = task_data['payload']
+
                 task = Task(
-                    id=str(task_data['id']),
-                    payload=task_data['payload']
+                    id=task_id, 
+                    payload=payload
                 )
                 tasks.append(task)
-            
+
         except json.JSONDecodeError as e:
             logger.error(f"Неверная запись JSON в файле {self.path}: {e}")
-            raise ValueError(
-                f"Неверная запись JSON в файле {self.path}: {e}")
+            raise ValueError(f"Неверная запись JSON в файле {self.path}: {e}")
         except KeyError as e:
             logger.error(f"Обязательное поле пропущено: {e}")
             raise KeyError(f"Обязательное поле пропущено: {e}")
         except Exception as e:
-            logger.error(f"Ошибка: {self.path}")
+            logger.error(f"Ошибка при загрузке файла {self.path}: {e}")
             raise ValueError(f"Ошибка: {self.path}")
 
-        logger.info(f"Создано {len(tasks)} объектов Task из файла")   
+        logger.info(f"Создано {len(tasks)} объектов Task из файла")
         return tasks

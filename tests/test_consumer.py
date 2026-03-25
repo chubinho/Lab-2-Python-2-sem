@@ -31,8 +31,8 @@ class TestConsumer:
         tasks = consumer.accept_tasks(source)
 
         assert len(tasks) == 3
-        assert tasks[0].id == "api_1"
-        assert tasks[1].id == "api_2"
+        assert tasks[0].id == 1
+        assert tasks[1].id == 2
         assert tasks[2].payload["action"] == "log_message"
 
     def test_accept_tasks_from_multiple_sources(self):

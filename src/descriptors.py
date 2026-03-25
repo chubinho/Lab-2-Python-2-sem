@@ -5,13 +5,14 @@ class IdDescriptor:
     """
     Data Descriptor для валидации идентификатора задачи
     """
+
     def __set_name__(self, owner: type, name: str) -> None:
         """
-        Сохраняет имя атрибута.
-        Вызывается автоматически при создании класса-владельца
+        Args:
+            owner: Класс-владелец дескриптора
+            name: Имя атрибута в классе
         """
-        self.id = '_' + name
-
+        self.storage_name: str = '_' + name
     def __set__(self, obj: object, value: int) -> None:
         """
         Устанавливает значение ID с валидацией
@@ -26,7 +27,7 @@ class IdDescriptor:
             raise ValidationError("Id должен быть целый")
         if value < 1:
             raise ValidationError("Id это целое число > 0")
-        setattr(obj, self.id, value)
+        setattr(obj, self.storage_name, value)
 
     def __get__(self, obj: object, owner: type = None) -> int | None:
         """
@@ -39,7 +40,7 @@ class IdDescriptor:
         """
         if obj is None:
             return self
-        return getattr(obj, self.id, None)
+        return getattr(obj, self.storage_name, None)
 
 
 class PriorityDescriptor:
@@ -56,7 +57,7 @@ class PriorityDescriptor:
             owner: Класс-владелец дескриптора
             name: Имя атрибута в классе
         """
-        self.priority = '_' + name
+        self.storage_name = '_' + name
 
     def __set__(self, obj: object, value: int) -> None:
         """
@@ -74,7 +75,7 @@ class PriorityDescriptor:
             raise ValidationError("Priority должен быть целым числом(от 1 до 10)")
         if not (1 <= value <= 10):
             raise ValidationError("Priority должен быть в диапазоне от 1 до 10")
-        setattr(obj, self.priority, value)
+        setattr(obj, self.storage_name, value)
 
     def __get__(self, obj: object, owner: type = None) -> int | None:
         """
@@ -87,7 +88,7 @@ class PriorityDescriptor:
         """
         if obj is None:
             return self
-        return getattr(obj, self.priority, None)
+        return getattr(obj, self.storage_name, None)
 
 
 class StatusDescriptor:
