@@ -90,7 +90,7 @@ class GeneratorSource:
                     "index": i,
                     "source": "GeneratorSource",
                     "priority": priority,
-                    "description": f"Сгенерированная задача #{i}",
+                    "description": f"{self.config.prefix}Сгенерированная задача #{i}",
                     "status": "new" 
                 }
             )
