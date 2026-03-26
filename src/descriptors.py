@@ -1,5 +1,5 @@
 from typing import Any, Optional
-from src.exceprions import ValidationError
+from src.exceptions import ValidationError
 
 class IdDescriptor:
     """
@@ -225,3 +225,4 @@ class TaskTypeDescriptor:
         if obj is None:
             return self
         return "GeneralTask"
+    
