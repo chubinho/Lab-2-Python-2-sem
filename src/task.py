@@ -7,7 +7,8 @@ from src.descriptors import (
     PriorityDescriptor,
     StatusDescriptor,
     ReadOnlyDescriptor,
-    TaskTypeDescriptor)
+    TaskTypeDescriptor,
+    ValidationError)
 
 
 @dataclass
@@ -32,6 +33,9 @@ class Task:
         Raises:
             ValidationError: Если данные в payload не проходят валидацию
         """
+        if not payload:
+            raise ValidationError("Payload не может быть пустым")
+        
         self.id = id
         self.payload = payload
         self.description = payload.get("description", "task")
