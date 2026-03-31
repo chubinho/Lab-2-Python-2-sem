@@ -63,7 +63,7 @@ def generate(
         logger.info(f"GeneratorSource: {len(tasks)} задач")
         typer.echo(f"GeneratorSource: {len(tasks)} задач")
         for task in tasks:
-            typer.echo(f"   • {task.id}: {task.payload}")
+            typer.echo(f"  - {task.id}: {task.payload}")
     except ValueError as e:
         logger.error(f"Некорректные параметры: {e}")
         typer.echo(f"Ошибка: {e}")
